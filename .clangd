@@ -1,0 +1,6 @@
+CompileFlags:
+  Add: [-std=c++17, -Wall]
+RemapIncludes:
+- "./include/:include"
+CompilationDatabase:
+  CompileCommands: build/compile_commands.json
