@@ -68,6 +68,11 @@ public:
     type = Type::STRING;
   }
 
+  void set_number(float f) {
+    this->values.f_value = f;
+    this->type = Type::NUMBER;
+  }
+
   void print_node(int indentation);
   std::string to_string(int indentation);
 };

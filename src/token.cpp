@@ -71,6 +71,8 @@ Token Tokenizer::get_token() {
     token.type = Tokens::CURLY_OPEN;
   else if (c == '}')
     token.type = Tokens::CURLY_CLOSE;
+  else if (c == ':')
+    token.type = Tokens::COLON;
   else if (c == ',')
     token.type = Tokens::COMMA;
 
@@ -106,6 +108,13 @@ void Tokenizer::__parse_number(Token *token, char *c) {
       }
     }
   }
+}
+
+void Tokenizer::rollback() {
+  if (this->file.eof()) {
+    file.clear();
+  }
+  file.seekg(this->prev_pos);
 }
 
 void Tokenizer::close_file() { this->file.close(); }

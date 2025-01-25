@@ -1,5 +1,6 @@
 #include "Node.h"
 #include <iostream>
+#include <ostream>
 #include <string>
 
 std::string JSON::JSON_Node::to_string(int indentation) {
@@ -14,7 +15,7 @@ std::string JSON::JSON_Node::to_string(int indentation) {
     output_string += space_string + std::to_string(values.f_value);
     break;
   case JSON::Type::LIST: {
-
+    output_string += "[\n";
     int index = 0;
     for (auto node : (*values.list)) {
       output_string += node->to_string(indentation + 1);
@@ -28,11 +29,10 @@ std::string JSON::JSON_Node::to_string(int indentation) {
   }
   case JSON::Type::OBJECT: {
     output_string += "{\n";
-    for (JSON::JSON_Object::iterator i = (*values.object).begin();
-         i != (*values.object).end(); i++) {
+    for (auto i = (*values.object).begin(); i != (*values.object).end(); i++) {
       output_string += space_string + i->first + ":";
       output_string += i->second->to_string(indentation + 1);
-      JSON_Object::iterator next = i;
+      auto next = i;
       next++;
       if ((next) != (*values.object).end()) {
         output_string += space_string + ",";

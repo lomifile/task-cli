@@ -1,21 +1,10 @@
-#include <exception>
-#include <iostream>
 #include <string>
 
-#include "Token.h"
+#include "Parser.h"
 
 int main() {
-  Tokenizer *tokenizer = new Tokenizer("./sample-db.json");
+  Parser *parser = new Parser("./sample-db.json");
+  parser->parse();
 
-  while (tokenizer->has_more_tokens()) {
-    try {
-      auto token = tokenizer->get_token();
-      std::cout << token.to_stirng() << std::endl;
-    } catch (const std::exception &e) {
-      break;
-    }
-  }
-
-  tokenizer->close_file();
   return 0;
 }
