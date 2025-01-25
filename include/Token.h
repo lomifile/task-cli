@@ -1,13 +1,14 @@
 #include <fstream>
 
-enum class Tokens : char {
-  CURLY_OPEN = '{',
-  CURLY_CLOSE = '}',
-  COLON = ':',
-  STRING = '"',
-  ARRAY_OPEN = '[',
-  ARRAY_CLOSE = ']',
-  COMMA = ',',
+enum Tokens {
+  CURLY_OPEN,
+  CURLY_CLOSE,
+  COLON,
+  STRING,
+  ARRAY_OPEN,
+  ARRAY_CLOSE,
+  COMMA,
+  NUMBER,
 };
 
 struct Token {
@@ -29,4 +30,6 @@ public:
 private:
   std::fstream file;
   size_t prev_pos;
+  void __parse_string(Token *token);
+  void __parse_number(Token *token, char *c);
 };

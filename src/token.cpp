@@ -28,7 +28,6 @@ char Tokenizer::get_without_whitespace() {
 }
 
 Token Tokenizer::get_token() {
-
   if (this->file.eof()) {
     std::cout << "Exhausted tokens" << std::endl;
   }
@@ -39,45 +38,53 @@ Token Tokenizer::get_token() {
 
   struct Token token;
 
-  switch (c) {
-  case static_cast<char>(Tokens::STRING):
-    token.type = Tokens::STRING;
-
-    token.value = "";
-
-    c = this->get_without_whitespace();
-
-    while (c != '"') {
-      token.value += c;
-      c = this->get_without_whitespace();
-    }
-
-    std::cout << static_cast<char>(token.type) << " " << token.value
-              << std::endl;
-
-    break;
-
-  case static_cast<char>(Tokens::ARRAY_OPEN):
+  if (c == '"')
+    this->__parse_string(&token);
+  else if (c == '-' || (c >= '0' && c <= '9'))
+    this->__parse_number(&token, &c);
+  else if (c == '[')
     token.type = Tokens::ARRAY_OPEN;
-    break;
-
-  case static_cast<char>(Tokens::ARRAY_CLOSE):
+  else if (c == ']')
     token.type = Tokens::ARRAY_CLOSE;
-    break;
-
-  case static_cast<char>(Tokens::CURLY_OPEN):
+  else if (c == '{')
     token.type = Tokens::CURLY_OPEN;
-    break;
-
-  case static_cast<char>(Tokens::CURLY_CLOSE):
+  else if (c == '}')
     token.type = Tokens::CURLY_CLOSE;
-    break;
-  case static_cast<char>(Tokens::COMMA):
+  else if (c == ',')
     token.type = Tokens::COMMA;
-    break;
-  }
 
   return token;
+}
+
+void Tokenizer::__parse_string(Token *token) {
+  token->type = Tokens::STRING;
+  token->value = "";
+  char c = this->get_without_whitespace();
+  while (c != '"') {
+    token->value += c;
+    c = this->get_without_whitespace();
+  }
+}
+
+void Tokenizer::__parse_number(Token *token, char *c) {
+  token->type = Tokens::NUMBER;
+  token->value = "";
+  token->value += *c;
+  std::streampos prev_char_pos = this->file.tellg();
+  while (*c == '-' || (*c >= '0' && *c <= '9') || *c == '.') {
+    prev_char_pos = this->file.tellg();
+    this->file.get(*c);
+
+    if (this->file.eof())
+      break;
+    else {
+      if (*c == '-' || (*c >= '0' && *c <= '9') || *c == '.') {
+        token->value += *c;
+      } else {
+        file.seekg(prev_char_pos);
+      }
+    }
+  }
 }
 
 void Tokenizer::close_file() { this->file.close(); }

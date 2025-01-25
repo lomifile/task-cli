@@ -1,6 +1,6 @@
 [
   {
-    "id": "1",
+    "id": 1,
     "description": "Task 1",
     "status": "in-progress",
     "createdAt": "2024-01-21",

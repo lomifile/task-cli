@@ -10,8 +10,7 @@ int main() {
   while (tokenizer->has_more_tokens()) {
     try {
       auto token = tokenizer->get_token();
-      std::cout << static_cast<char>(token.type) << " " << token.value
-                << std::endl;
+      std::cout << token.value << std::endl;
     } catch (const std::exception &e) {
       break;
     }
