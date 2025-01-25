@@ -1,23 +1,22 @@
-#include "JSON.h"
-#include <fstream>
+#include <exception>
 #include <iostream>
 #include <string>
 
+#include "Token.h"
+
 int main() {
-  std::cout << "hello world" << std::endl;
-  std::ifstream db;
-  db.open("sample-db.json");
-  std::string data;
+  Tokenizer *tokenizer = new Tokenizer("./sample-db.json");
 
-  if (!db.is_open()) {
-    std::cout << "Error while opening file" << std::endl;
-    return -1;
+  while (tokenizer->has_more_tokens()) {
+    try {
+      auto token = tokenizer->get_token();
+      std::cout << static_cast<char>(token.type) << " " << token.value
+                << std::endl;
+    } catch (const std::exception &e) {
+      break;
+    }
   }
 
-  while (db) {
-    std::getline(db, data);
-    std::cout << data << std::endl;
-  }
-
+  tokenizer->close_file();
   return 0;
 }
