@@ -5,7 +5,28 @@
 
 #include "Token.h"
 
-// std::string Token::to_stirng() {}
+std::string Token::to_stirng() {
+  switch (type) {
+  case CURLY_OPEN:
+    return "CURLY_OPEN";
+  case CURLY_CLOSE:
+    return "CURLY_CLOSE";
+  case ARRAY_OPEN:
+    return "ARRAY_OPEN";
+  case ARRAY_CLOSE:
+    return "ARRAY_CLOSE";
+  case COMMA:
+    return "COMMA";
+  case COLON:
+    return "COLON";
+  case NUMBER:
+    return "NUMBER: " + value;
+  case STRING:
+    return "STRING: " + value;
+  }
+
+  return "";
+}
 
 Tokenizer::Tokenizer(const std::string &file_path) {
   this->file.open(file_path, std::ios::in);

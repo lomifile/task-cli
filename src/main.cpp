@@ -10,7 +10,7 @@ int main() {
   while (tokenizer->has_more_tokens()) {
     try {
       auto token = tokenizer->get_token();
-      std::cout << token.value << std::endl;
+      std::cout << token.to_stirng() << std::endl;
     } catch (const std::exception &e) {
       break;
     }
