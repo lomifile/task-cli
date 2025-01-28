@@ -22,10 +22,6 @@ void Parser::parse() {
       case Tokens::CURLY_OPEN: {
         std::cout << "Object" << std::endl;
         std::shared_ptr<JSON::JSON_Node> parsed_object = this->_parse_object();
-        for (auto it = parsed_object->get_object().begin();
-             it != parsed_object->get_object().end(); it++) {
-          std::cout << it->first << ':' << it->second << std::endl;
-        }
         if (!this->_root)
           this->_root = parsed_object;
         break;
@@ -136,6 +132,7 @@ std::shared_ptr<JSON::JSON_Node> Parser::_parse_object() {
       }
     }
   }
+
   node->set_object(object);
   return node;
 }
