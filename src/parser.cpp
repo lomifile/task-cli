@@ -6,7 +6,6 @@
 #include <ostream>
 
 void Parser::parse() {
-
   while (this->_tokenizer.has_more_tokens()) {
     try {
       auto token = this->_tokenizer.get_token();
@@ -15,7 +14,6 @@ void Parser::parse() {
       case Tokens::STRING: {
         this->_tokenizer.rollback();
         std::shared_ptr<JSON::JSON_Node> node = this->_parse_string();
-        node->print_node(0);
         if (!this->_root)
           this->_root = node;
         break;
@@ -24,7 +22,6 @@ void Parser::parse() {
       case Tokens::CURLY_OPEN: {
         std::cout << "Object" << std::endl;
         std::shared_ptr<JSON::JSON_Node> parsed_object = this->_parse_object();
-        parsed_object->print_node(0);
         for (auto it = parsed_object->get_object().begin();
              it != parsed_object->get_object().end(); it++) {
           std::cout << it->first << ':' << it->second << std::endl;
@@ -36,7 +33,6 @@ void Parser::parse() {
 
       case Tokens::ARRAY_OPEN: {
         std::shared_ptr<JSON::JSON_Node> parsed_list = this->_parse_list();
-        parsed_list->print_node(0);
         if (!this->_root)
           this->_root = parsed_list;
         break;
@@ -45,13 +41,11 @@ void Parser::parse() {
       case Tokens::NUMBER: {
         this->_tokenizer.rollback();
         std::shared_ptr<JSON::JSON_Node> parsed_number = this->_parse_number();
-        parsed_number->print_node(0);
         if (!this->_root)
           this->_root = parsed_number;
         break;
       }
       }
-
     } catch (const std::exception &e) {
       break;
     }

@@ -22,10 +22,10 @@ union Values {
 
 class JSON_Node {
 private:
-  Type type;
   Values values;
 
 public:
+  Type type;
   JSON_Node() {}
   JSON_Node(const Type &type) : type(type) {}
 
