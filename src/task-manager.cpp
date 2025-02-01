@@ -8,6 +8,19 @@
 #include "Node.h"
 #include "TaskManager.h"
 
+std::string *Task::TaskManager::get_current_time() {
+  time_t rawtime;
+  struct tm *timeinfo;
+  char buffer[80];
+
+  time(&rawtime);
+  timeinfo = localtime(&rawtime);
+
+  strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+
+  return new std::string(buffer);
+}
+
 float Task::TaskManager::find_last_id() {
   auto list = this->parser->get_root()->get_list();
 
@@ -36,25 +49,14 @@ void Task::TaskManager::create_new_task(std::string *task) {
 
   float new_id = this->find_last_id() + 1;
 
-  auto get_current_time = []() {
-    time_t rawtime;
-    struct tm *timeinfo;
-    char buffer[80];
-
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
-
-    return new std::string(buffer);
-  };
-
   JSON::JSON_Object *object = new JSON::JSON_Object();
   (*object)["id"] = Task::NodeFactory::create_node<float>(&new_id);
   (*object)["description"] = Task::NodeFactory::create_node<std::string>(task);
   (*object)["status"] = Task::NodeFactory::create_node(new std::string("todo"));
-  (*object)["created_at"] = Task::NodeFactory::create_node(get_current_time());
-  (*object)["updated_at"] = Task::NodeFactory::create_node(get_current_time());
+  (*object)["created_at"] =
+      Task::NodeFactory::create_node(this->get_current_time());
+  (*object)["updated_at"] =
+      Task::NodeFactory::create_node(this->get_current_time());
   std::shared_ptr<JSON::JSON_Node> object_node =
       std::make_shared<JSON::JSON_Node>();
   object_node->set_object(object);
@@ -94,19 +96,6 @@ JSON::JSON_Node *Task::TaskManager::find_node(const int &id) {
 }
 
 void Task::TaskManager::update_task(const int &id, std::string *task) {
-  auto get_current_time = []() {
-    time_t rawtime;
-    struct tm *timeinfo;
-    char buffer[80];
-
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
-
-    return new std::string(buffer);
-  };
-
   auto find_idx = [this](int id) {
     auto list = this->parser->_root->get_list();
     for (int idx = 0; idx < list.size(); idx++) {
@@ -126,7 +115,7 @@ void Task::TaskManager::update_task(const int &id, std::string *task) {
   (*updated_object)["status"] = object["status"];
   (*updated_object)["created_at"] = object["created_at"];
   (*updated_object)["updated_at"] =
-      Task::NodeFactory::create_node(get_current_time());
+      Task::NodeFactory::create_node(this->get_current_time());
 
   std::shared_ptr<JSON::JSON_Node> new_object_node =
       std::make_shared<JSON::JSON_Node>();

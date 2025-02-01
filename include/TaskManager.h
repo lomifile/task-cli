@@ -42,6 +42,7 @@ private:
   void flush_new_node(std::shared_ptr<JSON::JSON_Node> new_object_node);
   JSON::JSON_Node *find_node(const int &id);
   Parser *parser;
+  std::string *get_current_time();
 
 public:
   TaskManager() { this->parser = new Parser("./sample-db.json"); }
