@@ -109,16 +109,17 @@ void Task::TaskManager::update_task(const int &id, std::string *task) {
 
   auto find_idx = [this](int id) {
     auto list = this->parser->_root->get_list();
-    for (auto itr = list.begin(); itr != list.end(); ++itr) {
-      auto object = itr->get()->get_object();
-      if (object["id"]->get_number() == id)
-        return itr;
+    for (int idx = 0; idx < list.size(); idx++) {
+      auto element = list[idx]->get_object()["id"]->get_number();
+      if (element == id)
+        return idx;
     }
-    throw std::logic_error("No id in this list");
+    return -1;
   };
 
   auto prev = this->find_node(id);
   auto object = prev->get_object();
+
   JSON::JSON_Object *updated_object = new JSON::JSON_Object();
   (*updated_object)["id"] = object["id"];
   (*updated_object)["description"] = Task::NodeFactory::create_node(task);
@@ -130,11 +131,11 @@ void Task::TaskManager::update_task(const int &id, std::string *task) {
   std::shared_ptr<JSON::JSON_Node> new_object_node =
       std::make_shared<JSON::JSON_Node>();
   new_object_node->set_object(updated_object);
+
   JSON::JSON_List *updated_list = new JSON::JSON_List();
   (*updated_list) = this->parser->_root->get_list();
-  auto idx = find_idx(id);
-  updated_list->erase(idx);
-  updated_list->push_back(new_object_node);
+  int idx = find_idx(id);
+  (*updated_list)[idx] = new_object_node;
   std::shared_ptr<JSON::JSON_Node> new_root_node =
       std::make_shared<JSON::JSON_Node>();
   new_root_node->set_list(updated_list);
