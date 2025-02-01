@@ -40,6 +40,7 @@ private:
   void append_to_file();
   float find_last_id();
   void flush_new_node(std::shared_ptr<JSON::JSON_Node> new_object_node);
+  JSON::JSON_Node *find_node(const int &id);
   Parser *parser;
 
 public:
@@ -48,7 +49,7 @@ public:
   ~TaskManager() = default;
 
   void create_new_task(std::string *task);
-  void update_task(const int &id, const JSON::JSON_Node &object);
+  void update_task(const int &id, std::string *task);
   void delete_task(const int &id);
   void print_tasks();
   JSON::JSON_Object *get_one(const int &id);

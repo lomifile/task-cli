@@ -2,6 +2,7 @@
 #include <ctime>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 #include "Node.h"
@@ -26,7 +27,6 @@ void Task::TaskManager::print_tasks() {
   auto list = this->parser->get_root()->get_list();
   std::cout << list.size() << std::endl;
   for (auto itr = list.begin(); itr != list.end(); itr++) {
-
     itr->get()->print_node(0);
   }
 }
@@ -79,4 +79,66 @@ void Task::TaskManager::flush_new_node(
   new_root_node->set_list(new_list);
 
   this->parser->_root = new_root_node;
+}
+
+JSON::JSON_Node *Task::TaskManager::find_node(const int &id) {
+  JSON::JSON_List list = this->parser->_root->get_list();
+  for (auto itr = list.begin(); itr != list.end(); ++itr) {
+    auto node = itr->get();
+    if (node->get_object()["id"].get()->get_number() == id) {
+      return node;
+    }
+  }
+
+  return nullptr;
+}
+
+void Task::TaskManager::update_task(const int &id, std::string *task) {
+  auto get_current_time = []() {
+    time_t rawtime;
+    struct tm *timeinfo;
+    char buffer[80];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+
+    return new std::string(buffer);
+  };
+
+  auto find_idx = [this](int id) {
+    auto list = this->parser->_root->get_list();
+    for (auto itr = list.begin(); itr != list.end(); ++itr) {
+      auto object = itr->get()->get_object();
+      if (object["id"]->get_number() == id)
+        return itr;
+    }
+    throw std::logic_error("No id in this list");
+  };
+
+  auto prev = this->find_node(id);
+  auto object = prev->get_object();
+  JSON::JSON_Object *updated_object = new JSON::JSON_Object();
+  (*updated_object)["id"] = object["id"];
+  (*updated_object)["description"] = Task::NodeFactory::create_node(task);
+  (*updated_object)["status"] = object["status"];
+  (*updated_object)["created_at"] = object["created_at"];
+  (*updated_object)["updated_at"] =
+      Task::NodeFactory::create_node(get_current_time());
+
+  std::shared_ptr<JSON::JSON_Node> new_object_node =
+      std::make_shared<JSON::JSON_Node>();
+  new_object_node->set_object(updated_object);
+  JSON::JSON_List *updated_list = new JSON::JSON_List();
+  (*updated_list) = this->parser->_root->get_list();
+  auto idx = find_idx(id);
+  updated_list->erase(idx);
+  updated_list->push_back(new_object_node);
+  std::shared_ptr<JSON::JSON_Node> new_root_node =
+      std::make_shared<JSON::JSON_Node>();
+  new_root_node->set_list(updated_list);
+  this->parser->_root = new_root_node;
+
+  std::clog << "Task updated successfully" << std::endl;
 }
