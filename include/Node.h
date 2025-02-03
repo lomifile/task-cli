@@ -29,13 +29,13 @@ public:
   JSON_Node() {}
   JSON_Node(const Type &type) : type(type) {}
 
-  auto get_object() {
+  auto &get_object() {
     if (type == Type::OBJECT)
       return *this->values.object;
     throw std::logic_error("Improper return");
   }
 
-  auto get_list() {
+  auto &get_list() {
     if (type == Type::LIST)
       return *this->values.list;
     throw std::logic_error("Improper return");

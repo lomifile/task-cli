@@ -96,20 +96,15 @@ JSON::JSON_Node *Task::TaskManager::find_node(const int &id) {
 }
 
 void Task::TaskManager::update_task(const int &id, std::string *task) {
-  auto find_idx = [this](int id) {
-    auto list = this->parser->_root->get_list();
-    for (int idx = 0; idx < list.size(); idx++) {
-      auto element = list[idx]->get_object()["id"]->get_number();
-      if (element == id)
-        return idx;
-    }
-    return -1;
-  };
-
   auto prev = this->find_node(id);
-  auto object = prev->get_object();
+  if (!prev) {
+    std::cerr << "Error: Task with id " << id << " not found." << std::endl;
+    return;
+  }
 
-  JSON::JSON_Object *updated_object = new JSON::JSON_Object();
+  auto &object = prev->get_object();
+
+  auto updated_object = new JSON::JSON_Object();
   (*updated_object)["id"] = object["id"];
   (*updated_object)["description"] = Task::NodeFactory::create_node(task);
   (*updated_object)["status"] = object["status"];
@@ -117,18 +112,21 @@ void Task::TaskManager::update_task(const int &id, std::string *task) {
   (*updated_object)["updated_at"] =
       Task::NodeFactory::create_node(this->get_current_time());
 
-  std::shared_ptr<JSON::JSON_Node> new_object_node =
-      std::make_shared<JSON::JSON_Node>();
+  auto new_object_node = std::make_shared<JSON::JSON_Node>();
   new_object_node->set_object(updated_object);
 
-  JSON::JSON_List *updated_list = new JSON::JSON_List();
-  (*updated_list) = this->parser->_root->get_list();
-  int idx = find_idx(id);
-  (*updated_list)[idx] = new_object_node;
-  std::shared_ptr<JSON::JSON_Node> new_root_node =
-      std::make_shared<JSON::JSON_Node>();
-  new_root_node->set_list(updated_list);
-  this->parser->_root = new_root_node;
+  auto list = this->parser->_root;
+  auto &vec = list->get_list();
+
+  for (auto &item : vec) {
+    if (item && item->get_object()["id"]->get_number() == id) {
+      std::clog << "Updating task with id: " << id << std::endl;
+      item = new_object_node;
+      break;
+    }
+  }
+
+  this->parser->_root = list;
 
   std::clog << "Task updated successfully" << std::endl;
 }
