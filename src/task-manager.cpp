@@ -2,7 +2,6 @@
 #include <ctime>
 #include <iostream>
 #include <memory>
-#include <stdexcept>
 #include <string>
 
 #include "Node.h"
@@ -69,10 +68,7 @@ void Task::TaskManager::create_new_task(std::string *task) {
 void Task::TaskManager::flush_new_node(
     std::shared_ptr<JSON::JSON_Node> new_object_node) {
   auto list = this->parser->_root->get_list();
-  JSON::JSON_List *new_list = new JSON::JSON_List();
-  for (const auto &item : list) {
-    new_list->push_back(item);
-  }
+  JSON::JSON_List *new_list = new JSON::JSON_List(list);
 
   new_list->push_back(new_object_node);
 
@@ -96,32 +92,14 @@ JSON::JSON_Node *Task::TaskManager::find_node(const int &id) {
 }
 
 void Task::TaskManager::update_task(const int &id, std::string *task) {
-  auto prev = this->find_node(id);
-  if (!prev) {
-    std::cerr << "Error: Task with id " << id << " not found." << std::endl;
-    return;
-  }
-
-  auto &object = prev->get_object();
-
-  auto updated_object = new JSON::JSON_Object();
-  (*updated_object)["id"] = object["id"];
-  (*updated_object)["description"] = Task::NodeFactory::create_node(task);
-  (*updated_object)["status"] = object["status"];
-  (*updated_object)["created_at"] = object["created_at"];
-  (*updated_object)["updated_at"] =
-      Task::NodeFactory::create_node(this->get_current_time());
-
-  auto new_object_node = std::make_shared<JSON::JSON_Node>();
-  new_object_node->set_object(updated_object);
-
   auto list = this->parser->_root;
   auto &vec = list->get_list();
 
   for (auto &item : vec) {
     if (item && item->get_object()["id"]->get_number() == id) {
       std::clog << "Updating task with id: " << id << std::endl;
-      item = new_object_node;
+      auto &object = item->get_object();
+      object["description"] = Task::NodeFactory::create_node(task);
       break;
     }
   }
