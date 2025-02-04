@@ -56,6 +56,7 @@ public:
   void delete_task(const int &id);
   void update_status(const int &id, std::string *status);
   void print_tasks();
+  void print_filtered_tasks(std::string *filter);
   JSON::JSON_Object *get_one(const int &id);
 };
 } // namespace Task
