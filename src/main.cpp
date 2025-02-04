@@ -13,11 +13,14 @@
 
 int main(int argc, char *argv[]) {
   if (argc == 1) {
+    std::cout << "create \"<your_task>\" -> creates new task" << std::endl;
     std::cout << "update <ID> \"<your_task>\" -> updates task" << std::endl;
     std::cout << "delete <ID> -> deletes task" << std::endl;
     std::cout << "mark-in-progress <ID> -> sets task in-progress" << std::endl;
     std::cout << "mark-done <ID> -> sets task done" << std::endl;
-    std::cout << "list -> lists all tasks" << std::endl;
+    std::cout << "list -> lists all tasks, you can specify status filter: "
+                 "in-progress, todo and done"
+              << std::endl;
     exit(0);
   }
   // If file doesn't exist simply create empty array json
@@ -46,7 +49,9 @@ int main(int argc, char *argv[]) {
     std::cout << "delete <ID> -> deletes task" << std::endl;
     std::cout << "mark-in-progress <ID> -> sets task in-progress" << std::endl;
     std::cout << "mark-done <ID> -> sets task done" << std::endl;
-    std::cout << "list -> lists all tasks" << std::endl;
+    std::cout << "list -> lists all tasks, you can specify status filter: "
+                 "in-progress, todo and done"
+              << std::endl;
   } else if (strcmp(argv[1], "add") == 0) {
     if (argc < 3) {
       std::cerr << "Cannot create empty task";
@@ -76,7 +81,11 @@ int main(int argc, char *argv[]) {
     task_manager->update_status(atoi(argv[2]), new std::string("done"));
     task_manager->write_to_file();
   } else if (strcmp(argv[1], "list") == 0) {
-    task_manager->print_tasks();
+    if (argc >= 3) {
+      task_manager->print_filtered_tasks(new std::string(argv[2]));
+    } else {
+      task_manager->print_tasks();
+    }
   } else if (strcmp(argv[1], "delete") == 0) {
     if (argc < 3) {
       std::cerr << "You didn't set proper ID to delete";
@@ -90,7 +99,9 @@ int main(int argc, char *argv[]) {
     std::cout << "delete <ID> -> deletes task" << std::endl;
     std::cout << "mark-in-progress <ID> -> sets task in-progress" << std::endl;
     std::cout << "mark-done <ID> -> sets task done" << std::endl;
-    std::cout << "list -> lists all tasks" << std::endl;
+    std::cout << "list -> lists all tasks, you can specify status filter: "
+                 "in-progress, todo and done"
+              << std::endl;
   }
 
   delete task_manager;

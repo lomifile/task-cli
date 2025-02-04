@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cctype>
 #include <cstring>
 #include <ctime>
 #include <fstream>
@@ -39,6 +41,28 @@ float Task::TaskManager::find_last_id() {
   return largest;
 }
 
+void Task::TaskManager::print_filtered_tasks(std::string *filter) {
+  auto list = this->parser->_root->get_list();
+
+  if (list.size() == 0) {
+    return;
+  }
+
+  for (auto item : list) {
+    auto object = item->get_object();
+    std::string status = object["status"]->get_string();
+    status.erase(std::remove_if(status.begin(), status.end(), ::isspace),
+                 status.end());
+    if (filter->compare(status) == 0) {
+      std::cout << object["id"]->get_number() << std::setw(30)
+                << object["description"]->get_string() << std::setw(30)
+                << object["status"]->get_string() << std::setw(30)
+                << object["created_at"]->get_string() << std::setw(30)
+                << object["updated_at"]->get_string() << std::endl;
+    }
+  }
+}
+
 void Task::TaskManager::print_tasks() {
   auto list = this->parser->_root->get_list();
 
@@ -48,10 +72,10 @@ void Task::TaskManager::print_tasks() {
 
   for (auto item : list) {
     auto object = item->get_object();
-    std::cout << object["id"]->get_number() << std::setw(10)
-              << object["description"]->get_string() << std::setw(10)
-              << object["status"]->get_string() << std::setw(10)
-              << object["created_at"]->get_string() << std::setw(5)
+    std::cout << object["id"]->get_number() << std::setw(30)
+              << object["description"]->get_string() << std::setw(30)
+              << object["status"]->get_string() << std::setw(30)
+              << object["created_at"]->get_string() << std::setw(30)
               << object["updated_at"]->get_string() << std::endl;
   }
 }
