@@ -127,3 +127,20 @@ void Task::TaskManager::update_task(const int &id, std::string *task) {
 
   std::clog << "Task updated successfully" << std::endl;
 }
+
+void Task::TaskManager::delete_task(const int &id) {
+  auto &list = this->parser->_root->get_list();
+  for (auto itr = list.begin(); itr != list.end(); ++itr) {
+    if (itr->get()->get_object()["id"]->get_number() == id) {
+      list.erase(itr);
+      break;
+    }
+  }
+
+  std::shared_ptr<JSON::JSON_Node> new_root_node =
+      std::make_shared<JSON::JSON_Node>();
+  new_root_node->set_list(&list);
+  this->parser->_root = new_root_node;
+
+  std::clog << "Item " << id << " deleted successfully" << std::endl;
+}
