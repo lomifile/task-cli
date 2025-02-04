@@ -1,15 +1,12 @@
 #include "Parser.h"
 #include "Node.h"
-#include <iostream>
 #include <map>
 #include <memory>
-#include <ostream>
 
 void Parser::parse() {
   while (this->_tokenizer.has_more_tokens()) {
     try {
       auto token = this->_tokenizer.get_token();
-
       switch (token.type) {
       case Tokens::STRING: {
         this->_tokenizer.rollback();
@@ -20,7 +17,6 @@ void Parser::parse() {
       }
 
       case Tokens::CURLY_OPEN: {
-        std::cout << "Object" << std::endl;
         std::shared_ptr<JSON::JSON_Node> parsed_object = this->_parse_object();
         if (!this->_root)
           this->_root = parsed_object;
@@ -89,7 +85,6 @@ std::shared_ptr<JSON::JSON_Node> Parser::_parse_list() {
       }
     }
   }
-
   node->set_list(list);
   return node;
 }

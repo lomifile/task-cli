@@ -1,5 +1,6 @@
 #include <cstring>
 #include <ctime>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -22,7 +23,9 @@ std::string *Task::TaskManager::get_current_time() {
 }
 
 float Task::TaskManager::find_last_id() {
-  auto list = this->parser->get_root()->get_list();
+  auto list = this->parser->_root->get_list();
+  if (list.size() == 0)
+    return 0;
 
   float largest = 0;
   for (auto itr = list.begin(); itr != list.end(); itr++) {
@@ -37,34 +40,23 @@ float Task::TaskManager::find_last_id() {
 }
 
 void Task::TaskManager::print_tasks() {
-  auto &list = this->parser->get_root()->get_list();
+  auto list = this->parser->_root->get_list();
 
-  std::cout << "| Id " << std::setw(10) << "|" << std::setw(20) << " Task"
-            << std::setw(20) << "|" << std::setw(15) << "Status"
-            << std::setw(14) << "|" << std::setw(15) << "Created at"
-            << std::setw(18) << "|" << std::setw(15) << "Updated at"
-            << std::setw(18) << "|" << std::endl;
-  std::cout << "+-------------+"
-            << "---------------------------------------+"
-            << "----------------------------+"
-            << "--------------------------------+"
-            << "--------------------------------+" << std::endl;
-  for (const auto &item : list) {
+  if (list.size() == 0) {
+    return;
+  }
+
+  for (auto item : list) {
     auto object = item->get_object();
-    std::cout << "|" << std::setw(5) << object["id"]->get_number()
-              << std::setw(9) << "|" << std::setw(7)
-              << object["description"]->get_string() << std::setw(33) << "|"
-              << std::setw(14) << object["status"]->get_string()
-              << std::setw(15) << "|" << std::setw(23)
-              << object["created_at"]->get_string() << std::setw(10) << "|"
-              << std::setw(23) << object["updated_at"]->get_string()
-              << std::setw(10) << "|" << std::endl;
+    std::cout << object["id"]->get_number() << std::setw(10)
+              << object["description"]->get_string() << std::setw(10)
+              << object["status"]->get_string() << std::setw(10)
+              << object["created_at"]->get_string() << std::setw(5)
+              << object["updated_at"]->get_string() << std::endl;
   }
 }
 
 void Task::TaskManager::create_new_task(std::string *task) {
-  parser->parse();
-
   float new_id = this->find_last_id() + 1;
 
   JSON::JSON_Object *object = new JSON::JSON_Object();
@@ -162,4 +154,10 @@ void Task::TaskManager::delete_task(const int &id) {
   this->parser->_root = new_root_node;
 
   std::clog << "Item " << id << " deleted successfully" << std::endl;
+}
+
+void Task::TaskManager::write_to_file() {
+  std::ofstream file;
+  file.open(FILE_PATH, std::fstream::out | std::fstream::trunc);
+  file << this->parser->_root->to_string(0);
 }

@@ -82,10 +82,10 @@ Token Tokenizer::get_token() {
 void Tokenizer::__parse_string(Token *token) {
   token->type = Tokens::STRING;
   token->value = "";
-  char c = this->get_without_whitespace();
+  char c = this->file.get();
   while (c != '"') {
     token->value += c;
-    c = this->get_without_whitespace();
+    c = this->file.get();
   }
 }
 

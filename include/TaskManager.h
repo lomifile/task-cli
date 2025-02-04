@@ -6,6 +6,7 @@
 #include <string>
 #include <type_traits>
 
+const std::string FILE_PATH = "./tasks-db.json";
 namespace Task {
 
 class NodeFactory {
@@ -45,10 +46,11 @@ private:
   std::string *get_current_time();
 
 public:
-  TaskManager() { this->parser = new Parser("./sample-db.json"); }
+  TaskManager() { this->parser = new Parser(FILE_PATH); }
   TaskManager(Parser *parser) : parser(parser) {};
   ~TaskManager() = default;
 
+  void write_to_file();
   void create_new_task(std::string *task);
   void update_task(const int &id, std::string *task);
   void delete_task(const int &id);

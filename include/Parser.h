@@ -15,7 +15,6 @@ private:
 
 public:
   Parser(const std::string &file_path) : _tokenizer(file_path) {};
-  inline std::shared_ptr<JSON::JSON_Node> get_root() { return this->_root; }
   void parse();
   std::shared_ptr<JSON::JSON_Node> _root;
 };

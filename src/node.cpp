@@ -10,6 +10,7 @@ std::string JSON::JSON_Node::to_string(int indentation) {
   switch (type) {
   case JSON::Type::STRING:
     output_string += space_string + *values.s;
+    output_string = '"' + output_string + '"';
     break;
   case JSON::Type::NUMBER:
     output_string += space_string + std::to_string(values.f_value);
@@ -30,7 +31,7 @@ std::string JSON::JSON_Node::to_string(int indentation) {
   case JSON::Type::OBJECT: {
     output_string += "{\n";
     for (auto i = (*values.object).begin(); i != (*values.object).end(); i++) {
-      output_string += space_string + i->first + ":";
+      output_string += '"' + i->first + '"' + ":";
       output_string += i->second->to_string(indentation + 1);
       auto next = i;
       next++;
