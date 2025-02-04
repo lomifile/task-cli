@@ -49,6 +49,9 @@ int main(int argc, char *argv[]) {
     task_manager->write_to_file();
   } else if (strcmp(argv[1], "list") == 0) {
     task_manager->print_tasks();
+  } else if (strcmp(argv[1], "delete") == 0) {
+    task_manager->delete_task(atoi(argv[2]));
+    task_manager->write_to_file();
   } else {
     std::cout << "You are missig sometihng" << std::endl;
   }
