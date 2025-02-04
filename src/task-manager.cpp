@@ -1,5 +1,6 @@
 #include <cstring>
 #include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -15,7 +16,7 @@ std::string *Task::TaskManager::get_current_time() {
   time(&rawtime);
   timeinfo = localtime(&rawtime);
 
-  strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+  strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%S", timeinfo);
 
   return new std::string(buffer);
 }
@@ -36,10 +37,28 @@ float Task::TaskManager::find_last_id() {
 }
 
 void Task::TaskManager::print_tasks() {
-  auto list = this->parser->get_root()->get_list();
-  std::cout << list.size() << std::endl;
-  for (auto itr = list.begin(); itr != list.end(); itr++) {
-    itr->get()->print_node(0);
+  auto &list = this->parser->get_root()->get_list();
+
+  std::cout << "| Id " << std::setw(10) << "|" << std::setw(20) << " Task"
+            << std::setw(20) << "|" << std::setw(15) << "Status"
+            << std::setw(14) << "|" << std::setw(15) << "Created at"
+            << std::setw(18) << "|" << std::setw(15) << "Updated at"
+            << std::setw(18) << "|" << std::endl;
+  std::cout << "+-------------+"
+            << "---------------------------------------+"
+            << "----------------------------+"
+            << "--------------------------------+"
+            << "--------------------------------+" << std::endl;
+  for (const auto &item : list) {
+    auto object = item->get_object();
+    std::cout << "|" << std::setw(5) << object["id"]->get_number()
+              << std::setw(9) << "|" << std::setw(7)
+              << object["description"]->get_string() << std::setw(33) << "|"
+              << std::setw(14) << object["status"]->get_string()
+              << std::setw(15) << "|" << std::setw(23)
+              << object["created_at"]->get_string() << std::setw(10) << "|"
+              << std::setw(23) << object["updated_at"]->get_string()
+              << std::setw(10) << "|" << std::endl;
   }
 }
 
