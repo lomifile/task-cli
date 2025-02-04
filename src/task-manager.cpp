@@ -128,6 +128,25 @@ void Task::TaskManager::update_task(const int &id, std::string *task) {
   std::clog << "Task updated successfully" << std::endl;
 }
 
+void Task::TaskManager::update_status(const int &id, std::string *status) {
+  auto list = this->parser->_root;
+  auto &vec = list->get_list();
+
+  for (auto &item : vec) {
+    if (item && item->get_object()["id"]->get_number() == id) {
+      auto &object = item->get_object();
+      std::clog << "Updating status from " << object["status"]->get_string()
+                << " to " << (*status) << " for id " << id << std::endl;
+      object["status"] = Task::NodeFactory::create_node(status);
+      break;
+    }
+  }
+
+  this->parser->_root = list;
+
+  std::clog << "Task updated successfully" << std::endl;
+}
+
 void Task::TaskManager::delete_task(const int &id) {
   auto &list = this->parser->_root->get_list();
   for (auto itr = list.begin(); itr != list.end(); ++itr) {

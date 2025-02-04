@@ -52,6 +52,7 @@ public:
   void create_new_task(std::string *task);
   void update_task(const int &id, std::string *task);
   void delete_task(const int &id);
+  void update_status(const int &id, std::string *status);
   void print_tasks();
   JSON::JSON_Object *get_one(const int &id);
 };
