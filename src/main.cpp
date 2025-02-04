@@ -12,6 +12,14 @@
 #include "TaskManager.h"
 
 int main(int argc, char *argv[]) {
+  if (argc == 1) {
+    std::cout << "update <ID> \"<your_task>\" -> updates task" << std::endl;
+    std::cout << "delete <ID> -> deletes task" << std::endl;
+    std::cout << "mark-in-progress <ID> -> sets task in-progress" << std::endl;
+    std::cout << "mark-done <ID> -> sets task done" << std::endl;
+    std::cout << "list -> lists all tasks" << std::endl;
+    exit(0);
+  }
   // If file doesn't exist simply create empty array json
   Parser *parser = new Parser(FILE_PATH);
   if (!std::filesystem::exists(FILE_PATH)) {
@@ -31,29 +39,58 @@ int main(int argc, char *argv[]) {
   }
 
   Task::TaskManager *task_manager = new Task::TaskManager(parser);
-
+  // If file doesn't exist simply create empty array json
   if (strcmp(argv[1], "--help") == 0) {
-    std::cout << "Help" << std::endl;
+    std::cout << "create \"<your_task>\" -> creates new task" << std::endl;
+    std::cout << "update <ID> \"<your_task>\" -> updates task" << std::endl;
+    std::cout << "delete <ID> -> deletes task" << std::endl;
+    std::cout << "mark-in-progress <ID> -> sets task in-progress" << std::endl;
+    std::cout << "mark-done <ID> -> sets task done" << std::endl;
+    std::cout << "list -> lists all tasks" << std::endl;
   } else if (strcmp(argv[1], "add") == 0) {
-    auto item = std::string(argv[2]);
-    task_manager->create_new_task(&item);
+    if (argc < 3) {
+      std::cerr << "Cannot create empty task";
+      exit(-1);
+    }
+    task_manager->create_new_task(new std::string(argv[2]));
     task_manager->write_to_file();
   } else if (strcmp(argv[1], "update") == 0) {
+    if (argc < 4) {
+      std::cerr << "You didn't set proper ID and Value to update task";
+      exit(-1);
+    }
     task_manager->update_task(atoi(argv[2]), new std::string(argv[3]));
     task_manager->write_to_file();
   } else if (strcmp(argv[1], "mark-in-progress") == 0) {
+    if (argc < 3) {
+      std::cerr << "You didn't set proper ID to update";
+      exit(-1);
+    }
     task_manager->update_status(atoi(argv[2]), new std::string("in-progress"));
     task_manager->write_to_file();
   } else if (strcmp(argv[1], "mark-done") == 0) {
+    if (argc < 3) {
+      std::cerr << "You didn't set proper ID to update";
+      exit(-1);
+    }
     task_manager->update_status(atoi(argv[2]), new std::string("done"));
     task_manager->write_to_file();
   } else if (strcmp(argv[1], "list") == 0) {
     task_manager->print_tasks();
   } else if (strcmp(argv[1], "delete") == 0) {
+    if (argc < 3) {
+      std::cerr << "You didn't set proper ID to delete";
+      exit(-1);
+    }
     task_manager->delete_task(atoi(argv[2]));
     task_manager->write_to_file();
   } else {
-    std::cout << "You are missig sometihng" << std::endl;
+    std::cout << "create \"<your_task>\" -> creates new task" << std::endl;
+    std::cout << "update <ID> \"<your_task>\" -> updates task" << std::endl;
+    std::cout << "delete <ID> -> deletes task" << std::endl;
+    std::cout << "mark-in-progress <ID> -> sets task in-progress" << std::endl;
+    std::cout << "mark-done <ID> -> sets task done" << std::endl;
+    std::cout << "list -> lists all tasks" << std::endl;
   }
 
   delete task_manager;
